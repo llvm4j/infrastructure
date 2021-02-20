@@ -1,0 +1,36 @@
+name: Deploy to S3
+author: LLVM4J Organization
+description: Recursively deploy a directory into an AWS S3 Bucket
+
+inputs:
+  aws-access-key:
+    description: AWS Key ID to use
+    required: true
+
+  aws-secret-access-key:
+    description: AWS Secret Access Key to use
+    required: true
+
+  aws-bucket:
+    description: AWS S3 Bucket name
+    required: true
+
+  aws-region:
+    description: AWS region to deploy to
+    required: true
+
+  directory:
+    description: Directory on to upload to S3
+    required: true
+
+  prefix:
+    description: S3 Object Key prefix to append to all new objects
+    required: false
+
+  delete-existing-objects:
+    description: Deletes all the existing objects at the path (respects prefix) before uploading new objects.
+    required: true
+
+runs:
+  using: node12
+  main: dist/index.js
