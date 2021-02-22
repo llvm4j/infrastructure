@@ -43,7 +43,7 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
 
     let objects = await getObjects()
     // Keep deleting until there are no more items to delete with the prefix
-    while (objects.IsTruncated) {
+    do {
       logger.info(`deleting ${objects.Contents?.length ?? 0} objects from bucket`)
       await s3.deleteObjects({
         Bucket: configuration.bucket,
@@ -53,7 +53,7 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
       }).promise()
 
       objects = await getObjects()
-    }
+    } while (objects.IsTruncated)
     logger.info('all objects from bucket have been deleted')
   }
 
