@@ -12,7 +12,7 @@ const normalize = (path: string) => {
   while (path.endsWith('/')) {
     path = path.substring(0, path.length - 1)
   }
-  return `/${path}`
+  return `${path}`
 }
 
 interface Config {
@@ -48,7 +48,7 @@ interface Config {
   // Set the "relative root" of where to upload our objects
   const objectRoot = configuration.prefix !== null
     ? normalize(configuration.prefix)
-    : '/'
+    : ''
 
   // Delete all the existing objects if true in configuration
   if (configuration.deleteObjects) {
