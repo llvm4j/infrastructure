@@ -17,9 +17,6 @@ const configuration: DeployConfig = {
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.simple(),
-  defaultMeta: {
-    service: 'deploy-to-s3'
-  },
   transports: [
     new winston.transports.Console({
       format: winston.format.simple()

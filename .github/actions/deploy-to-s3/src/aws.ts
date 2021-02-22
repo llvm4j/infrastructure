@@ -34,14 +34,16 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
   // Delete all the existing objects if true in configuration
   if (configuration.deleteObjects) {
     logger.info('deleting old objects in bucket (delete-existing objects: true)')
-    const nextObjects = () => s3.listObjects({
+    const getObjects = () => s3.listObjectsV2({
       Bucket: configuration.bucket,
-      Prefix: objectRoot
+      ...(objectRoot === '' ? {} : {
+        Prefix: objectRoot
+      })
     }).promise()
 
-    let objects = await nextObjects()
+    let objects = await getObjects()
     // Keep deleting until there are no more items to delete with the prefix
-    while ((objects.Contents?.length ?? 0) > 0) {
+    while (objects.IsTruncated) {
       logger.info(`deleting ${objects.Contents?.length ?? 0} objects from bucket`)
       await s3.deleteObjects({
         Bucket: configuration.bucket,
@@ -50,7 +52,7 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
         }
       }).promise()
 
-      objects = await nextObjects()
+      objects = await getObjects()
     }
     logger.info('all objects from bucket have been deleted')
   }
