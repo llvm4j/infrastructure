@@ -33,7 +33,7 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
 
   // Delete all the existing objects if true in configuration
   if (configuration.deleteObjects) {
-    logger.info('deleting old objects in bucket (delete-existing objects: true)')
+    logger.info('attempting to delete old objects in bucket (delete-existing objects: true)')
     const getObjects = () => s3.listObjectsV2({
       Bucket: configuration.bucket,
       ...(objectRoot === '' ? {} : {
@@ -42,9 +42,15 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
     }).promise()
 
     let objects = await getObjects()
+    let objectCount = objects.Contents?.length ?? 0
+
+    if (objectCount === 0) {
+      logger.info('bucket is empty, no objects to delete')
+    }
+
     // Keep deleting until there are no more items to delete with the prefix
-    do {
-      logger.info(`deleting ${objects.Contents?.length ?? 0} objects from bucket`)
+    while ((objects.Contents?.length ?? 0) > 0){
+      logger.info(`batch deleting ${objects.Contents?.length ?? 0} objects from bucket`)
       await s3.deleteObjects({
         Bucket: configuration.bucket,
         Delete: {
@@ -53,8 +59,9 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
       }).promise()
 
       objects = await getObjects()
-    } while (objects.IsTruncated)
-    logger.info('all objects from bucket have been deleted')
+      objectCount += objects.Contents?.length ?? 0
+    }
+    logger.info(`${objectCount} objects from bucket have been deleted`)
   }
 
   const files = await glob(`${configuration.directory}/**`, {
