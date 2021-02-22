@@ -1,0 +1,19 @@
+{
+  "name": "@llvm4j/infrastructure",
+  "version": "1.0.0-rc1",
+  "description": "Infrastructure management at LLVM4J",
+  "private": true,
+  "scripts": {
+    "compile": "cd .github/actions/deploy-to-s3 && yarn compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/llvm4j/infrastructure"
+  },
+  "author": "me@supergrecko.com",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/llvm4j/infrastructure/issues"
+  },
+  "homepage": "https://github.com/llvm4j/infrastructure/#readme"
+}
