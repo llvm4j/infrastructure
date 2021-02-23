@@ -10,8 +10,10 @@
     "moduleResolution": "node",
     "declarationMap": false,
     "declaration": false,
+    "resolveJsonModule": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ]
   },
   "include": [
