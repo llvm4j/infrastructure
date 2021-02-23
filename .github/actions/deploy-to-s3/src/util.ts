@@ -5,5 +5,6 @@ export function normalize(path: string) {
   while (path.endsWith('/')) {
     path = path.substring(0, path.length - 1)
   }
-  return `${path}`
+  // Append a slash because fast-glob doesn't include one
+  return `${path}/`
 }

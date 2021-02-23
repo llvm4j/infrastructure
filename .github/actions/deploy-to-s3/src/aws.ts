@@ -26,40 +26,41 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
   })
 
   // Set the "relative root" of where to upload our objects
-  const objectRoot = configuration.prefix !== null
+  const root = configuration.prefix !== null
     ? normalize(configuration.prefix)
     : ''
-  logger.info(`uploading new objects with a prefix of: ${objectRoot}`)
+  logger.info(`uploading new objects with a prefix of: ${root}`)
 
   // Delete all the existing objects if true in configuration
   if (configuration.deleteObjects) {
     logger.info('attempting to delete old objects in bucket (delete-existing objects: true)')
-    const getObjects = () => s3.listObjectsV2({
+    const getObjects = async () => await s3.listObjectsV2({
       Bucket: configuration.bucket,
-      ...(objectRoot === '' ? {} : {
-        Prefix: objectRoot
-      })
+      Prefix: root
     }).promise()
 
     let objects = await getObjects()
     let objectCount = objects.Contents?.length ?? 0
 
     if (objectCount === 0) {
-      logger.info('bucket is empty, no objects to delete')
+      logger.info('prefix space is empty, no objects to delete')
     }
 
     // Keep deleting until there are no more items to delete with the prefix
     while ((objects.Contents?.length ?? 0) > 0){
-      logger.info(`batch deleting ${objects.Contents?.length ?? 0} objects from bucket`)
+      objects.Contents?.forEach(object => {
+        logger.info(`deleting object ${object.Key}`)
+      })
       await s3.deleteObjects({
         Bucket: configuration.bucket,
         Delete: {
-          Objects: objects.Contents!.map(obj => ({ Key: obj.Key! }))
+          Objects: objects.Contents!.map(({ Key }) => ({ Key: Key! }))
         }
       }).promise()
 
       objects = await getObjects()
       objectCount += objects.Contents?.length ?? 0
+      logger.info(`batch deleted ${objects.Contents?.length ?? 0} objects from bucket`)
     }
     logger.info(`${objectCount} objects from bucket have been deleted`)
   }
@@ -73,7 +74,7 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
     files.map(async file => {
       logger.info(`uploading file: ${file}`)
 
-      const objectKey = `${objectRoot}${file}`
+      const objectKey = `${root}${file}`
       let mimeType: string | undefined | false = mime.lookup(file)
       if (mimeType === false) {
         mimeType = undefined
@@ -95,4 +96,6 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
   )
 
   logger.info('upload complete')
+
+  return s3
 }

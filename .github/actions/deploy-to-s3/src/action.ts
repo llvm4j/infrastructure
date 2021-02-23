@@ -24,4 +24,4 @@ const logger = winston.createLogger({
   ]
 })
 
-run(configuration, logger)
+run(configuration, logger).catch(core.error)
