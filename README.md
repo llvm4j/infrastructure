@@ -5,9 +5,10 @@ to manage various tasks through GitHub automation.
 
 ## Overview
 
-- [actions/deploy-to-s3](.github/actions/deploy-to-s3): GitHub Action to 
+- [deploy-to-s3](deploy-to-s3): GitHub Action to 
   recursively deploy directories to an AWS S3 bucket. This is useful for 
-  automatically publishing JavaDoc or built documentation sites.
+  automatically publishing JavaDoc or built documentation sites to an S3 
+  bucket which can be viewed online.
 
 ## License
 
