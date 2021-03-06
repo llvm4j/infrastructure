@@ -4,7 +4,7 @@
   "description": "Infrastructure management at LLVM4J",
   "private": true,
   "scripts": {
-    "compile": "cd .github/actions/deploy-to-s3 && yarn compile"
+    "compile": "cd deploy-to-s3 && yarn compile"
   },
   "repository": {
     "type": "git",
