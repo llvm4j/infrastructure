@@ -72,11 +72,12 @@ export async function run(configuration: DeployConfig, logger: winston.Logger) {
 
   await Promise.all(
     files.map(async file => {
-      logger.info(`uploading file: ${file}`)
-
       // Trim off the specified directory (fast-glob includes this so we must shave it off)
       const trimLength = normalize(configuration.directory).length
       const objectKey = `${root}${file.substr(trimLength)}`
+
+      logger.info(`uploading file: ${file} to path ${objectKey}`)
+
       let mimeType: string | undefined | false = mime.lookup(file)
       if (mimeType === false) {
         mimeType = undefined
